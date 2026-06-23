@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping("/register")
-    public UserEntity register(@RequestBody UserRegistrationDto dto){
-       return userService.registerUser(dto.getUsername(), dto.getPassword());
+    public UserResponseDto register(@RequestBody UserRegistrationDto dto){
+       UserEntity registeredUser = userService.registerUser(dto.getUsername(), dto.getPassword());
+       return userMapper.toResponse(registeredUser);
     }
 }
