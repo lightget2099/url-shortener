@@ -12,5 +12,5 @@ CREATE TABLE urls(
     expires_at TIMESTAMP,
     click_count INTEGER DEFAULT 0,
     user_id BIGINT,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE 
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )
