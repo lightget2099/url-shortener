@@ -34,4 +34,10 @@ public class GlobalExceptionHandler {
                 .orElse("Validation failed");
         return new ErrorResponse(errorMessage, LocalDateTime.now(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UrlExpiredException.class)
+    @ResponseStatus(HttpStatus.GONE)
+    public ErrorResponse handleUrlExpiredException(UrlExpiredException ex) {
+        return new ErrorResponse(ex.getMessage(), LocalDateTime.now(), HttpStatus.GONE);
+    }
 }
