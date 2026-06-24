@@ -2,6 +2,7 @@ package com.example.url_shortener.url.controller;
 
 import com.example.url_shortener.url.dto.UrlRequestDto;
 import com.example.url_shortener.url.dto.UrlResponseDto;
+import com.example.url_shortener.url.dto.UrlStatsResponseDto;
 import com.example.url_shortener.url.service.UrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,11 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(redirectUri)
                 .build();
+    }
+
+    @GetMapping("/{code}/stats")
+    public UrlStatsResponseDto getUrlStats(@PathVariable String code) {
+        UrlStatsResponseDto urlStats = urlService.getUrlStats(code);
+        return urlStats;
     }
 }

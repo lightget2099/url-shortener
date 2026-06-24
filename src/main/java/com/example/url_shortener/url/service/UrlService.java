@@ -2,7 +2,9 @@ package com.example.url_shortener.url.service;
 
 import com.example.url_shortener.exception.UrlExpiredException;
 import com.example.url_shortener.exception.UrlNotFoundException;
+import com.example.url_shortener.url.dto.UrlStatsResponseDto;
 import com.example.url_shortener.url.entity.UrlEntity;
+import com.example.url_shortener.url.mapper.UrlMapper;
 import com.example.url_shortener.url.repository.UrlRepository;
 import com.example.url_shortener.user.entity.UserEntity;
 import com.example.url_shortener.user.repository.UserRepository;
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 public class UrlService {
     private final UrlRepository urlRepository;
     private final UserRepository userRepository;
+    private final UrlMapper urlMapper;
 
     private static final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -66,5 +69,13 @@ public class UrlService {
         urlEntity.setClickCount(urlEntity.getClickCount() + 1);
         urlRepository.save(urlEntity);
         return urlEntity.getUrl();
+        }
+
+        public UrlStatsResponseDto getUrlStats(String code) {
+        UrlEntity urlEntity = urlRepository.findByCode(code).
+                orElseThrow(() -> new UrlNotFoundException("URL with code " + code + " not found"));
+
+        UrlStatsResponseDto dto = urlMapper.toStatsDto(urlEntity);
+        return dto;
         }
     }
