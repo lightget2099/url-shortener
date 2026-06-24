@@ -1,4 +1,4 @@
-package com.example.url_shortener.url;
+package com.example.url_shortener.url.dto;
 
 import lombok.Value;
 

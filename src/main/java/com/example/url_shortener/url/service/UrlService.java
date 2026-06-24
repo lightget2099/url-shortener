@@ -1,8 +1,10 @@
-package com.example.url_shortener.url;
+package com.example.url_shortener.url.service;
 
 import com.example.url_shortener.exception.UrlNotFoundException;
-import com.example.url_shortener.user.UserEntity;
-import com.example.url_shortener.user.UserRepository;
+import com.example.url_shortener.url.entity.UrlEntity;
+import com.example.url_shortener.url.repository.UrlRepository;
+import com.example.url_shortener.user.entity.UserEntity;
+import com.example.url_shortener.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

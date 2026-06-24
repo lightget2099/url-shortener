@@ -1,5 +1,10 @@
-package com.example.url_shortener.user;
+package com.example.url_shortener.user.controller;
 
+import com.example.url_shortener.user.dto.UserRegistrationDto;
+import com.example.url_shortener.user.dto.UserResponseDto;
+import com.example.url_shortener.user.service.UserService;
+import com.example.url_shortener.user.entity.UserEntity;
+import com.example.url_shortener.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

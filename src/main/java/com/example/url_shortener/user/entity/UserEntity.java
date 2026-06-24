@@ -1,6 +1,6 @@
-package com.example.url_shortener.user;
+package com.example.url_shortener.user.entity;
 
-import com.example.url_shortener.url.UrlEntity;
+import com.example.url_shortener.url.entity.UrlEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

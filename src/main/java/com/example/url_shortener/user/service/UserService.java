@@ -1,5 +1,7 @@
-package com.example.url_shortener.user;
+package com.example.url_shortener.user.service;
 
+import com.example.url_shortener.user.repository.UserRepository;
+import com.example.url_shortener.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

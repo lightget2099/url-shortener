@@ -1,5 +1,8 @@
-package com.example.url_shortener.url;
+package com.example.url_shortener.url.controller;
 
+import com.example.url_shortener.url.dto.UrlRequestDto;
+import com.example.url_shortener.url.dto.UrlResponseDto;
+import com.example.url_shortener.url.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
