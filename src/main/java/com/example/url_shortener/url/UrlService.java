@@ -1,6 +1,7 @@
 package com.example.url_shortener.url;
 
 import com.example.url_shortener.user.UserEntity;
+import com.example.url_shortener.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UrlService {
     private final UrlRepository urlRepository;
+    private final UserRepository userRepository;
 
     private String encodeToBase62(long id) {
         java.util.Random rand = new java.util.Random();
@@ -29,11 +31,14 @@ public class UrlService {
         return sb.toString();
     }
 
-    public String shortenUrl(String url, UserEntity user) {
+    public String shortenUrl(String url, Long userId) {
         UrlEntity urlEntity = new UrlEntity();
         urlEntity.setUrl(url);
         urlEntity.setCreatedAt(LocalDateTime.now());
+        UserEntity user = userRepository.findById(userId).
+                orElseThrow(() -> new RuntimeException("User not found"));
         urlEntity.setUser(user);
+        urlEntity.setCode("");
         UrlEntity savedUrl = urlRepository.save(urlEntity);
 
         String code = encodeToBase62(savedUrl.getId());
@@ -42,4 +47,12 @@ public class UrlService {
 
         return code;
     }
-}
+
+    public String getOriginalUrl(String code) {
+        UrlEntity urlEntity = urlRepository.findByCode(code).
+                orElseThrow(() -> new RuntimeException("URL not found"));
+        urlEntity.setClickCount(urlEntity.getClickCount() + 1);
+        urlRepository.save(urlEntity);
+        return urlEntity.getUrl();
+        }
+    }
