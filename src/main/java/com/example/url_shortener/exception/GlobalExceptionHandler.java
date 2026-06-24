@@ -40,4 +40,10 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleUrlExpiredException(UrlExpiredException ex) {
         return new ErrorResponse(ex.getMessage(), LocalDateTime.now(), HttpStatus.GONE);
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserNotFoundException(UserNotFoundException ex) {
+        return new ErrorResponse(ex.getMessage(), LocalDateTime.now(), HttpStatus.NOT_FOUND);
+    }
 }
