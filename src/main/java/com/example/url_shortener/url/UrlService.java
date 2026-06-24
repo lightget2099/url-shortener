@@ -11,18 +11,25 @@ import java.time.LocalDateTime;
 public class UrlService {
     private final UrlRepository urlRepository;
 
-    private String encodeToBase62(long id){
+    private String encodeToBase62(long id) {
+        java.util.Random rand = new java.util.Random();
         String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder sb = new StringBuilder();
-        while(id>0){
+        while (id > 0) {
             int remainder = (int) (id % 62);
             sb.append(alphabet.charAt(remainder));
             id = id / 62;
         }
-        return sb.reverse().toString();
+
+        while (sb.length() < 6) {
+            char randomChar = alphabet.charAt(rand.nextInt(alphabet.length()));
+            sb.append(randomChar);
+        }
+
+        return sb.toString();
     }
 
-    public String shortenUrl(String url, UserEntity user){
+    public String shortenUrl(String url, UserEntity user) {
         UrlEntity urlEntity = new UrlEntity();
         urlEntity.setUrl(url);
         urlEntity.setCreatedAt(LocalDateTime.now());
