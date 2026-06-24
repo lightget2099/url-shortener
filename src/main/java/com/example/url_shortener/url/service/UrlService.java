@@ -26,8 +26,8 @@ public class UrlService {
 
     private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    private static final String URL_PREFIX_ERROR = "URL with code ";
-    private static final String NOT_FOUND_SUFFIX = " not found";
+    private static final String URL_PREFIX_ERROR = "For shorten url: '";
+    private static final String NOT_FOUND_SUFFIX = "' original URL was not found";
     private static final String USER_PREFIX_ERROR = "User with ID ";
     private static final String NOT_EXIST_SUFFIX = " doesn't exist";
 
