@@ -3,6 +3,7 @@ package com.example.url_shortener.url.controller;
 import com.example.url_shortener.url.dto.UrlRequestDto;
 import com.example.url_shortener.url.dto.UrlResponseDto;
 import com.example.url_shortener.url.service.UrlService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ public class UrlController {
     private final UrlService urlService;
 
     @PostMapping
-    public ResponseEntity<UrlResponseDto> createShortenUrl(@RequestBody UrlRequestDto dto,
+    public ResponseEntity<UrlResponseDto> createShortenUrl(@Valid @RequestBody UrlRequestDto dto,
                                                            @RequestParam Long userId) {
         UrlResponseDto test = new UrlResponseDto(urlService.shortenUrl(dto.getUrl(), userId));
         return ResponseEntity.ok(test);
