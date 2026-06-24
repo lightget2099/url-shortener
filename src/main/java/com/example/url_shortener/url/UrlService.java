@@ -1,5 +1,6 @@
 package com.example.url_shortener.url;
 
+import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.user.UserEntity;
 import com.example.url_shortener.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class UrlService {
 
     public String getOriginalUrl(String code) {
         UrlEntity urlEntity = urlRepository.findByCode(code).
-                orElseThrow(() -> new RuntimeException("URL not found"));
+                orElseThrow(() -> new UrlNotFoundException("URL with code " + code + " not found"));
         urlEntity.setClickCount(urlEntity.getClickCount() + 1);
         urlRepository.save(urlEntity);
         return urlEntity.getUrl();
