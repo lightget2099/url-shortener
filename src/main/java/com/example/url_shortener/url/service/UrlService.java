@@ -26,6 +26,11 @@ public class UrlService {
 
     private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+    private static final String URL_PREFIX_ERROR = "URL with code ";
+    private static final String NOT_FOUND_SUFFIX = " not found";
+    private static final String USER_PREFIX_ERROR = "User with ID ";
+    private static final String NOT_EXIST_SUFFIX = " doesn't exist";
+
     private String encodeToBase62(long id) {
         StringBuilder sb = new StringBuilder();
         while (id > 0) {
@@ -49,7 +54,7 @@ public class UrlService {
         urlEntity.setCreatedAt(LocalDateTime.now());
         urlEntity.setExpiresAt(LocalDateTime.now().plusDays(30));
         UserEntity user = userRepository.findById(userId).
-                orElseThrow(() -> new UserNotFoundException("User with ID " + userId + "doesn't exist"));
+                orElseThrow(() -> new UserNotFoundException(USER_PREFIX_ERROR + userId + NOT_EXIST_SUFFIX));
         urlEntity.setUser(user);
         urlEntity.setCode("");
         UrlEntity savedUrl = urlRepository.save(urlEntity);
@@ -63,10 +68,10 @@ public class UrlService {
 
     public String getOriginalUrl(String code) {
         UrlEntity urlEntity = urlRepository.findByCode(code).
-                orElseThrow(() -> new UrlNotFoundException("URL with code " + code + " not found"));
+                orElseThrow(() -> new UrlNotFoundException(URL_PREFIX_ERROR + code + NOT_FOUND_SUFFIX));
 
         if (urlEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new UrlExpiredException("URL with code " + code + " has expired");
+            throw new UrlExpiredException(URL_PREFIX_ERROR + code + " has expired");
         }
 
         urlEntity.setClickCount(urlEntity.getClickCount() + 1);
@@ -76,16 +81,22 @@ public class UrlService {
 
         public UrlStatsResponseDto getUrlStats(String code) {
         UrlEntity urlEntity = urlRepository.findByCode(code).
-                orElseThrow(() -> new UrlNotFoundException("URL with code " + code + " not found"));
+                orElseThrow(() -> new UrlNotFoundException(URL_PREFIX_ERROR + code + NOT_FOUND_SUFFIX));
 
         return urlMapper.toStatsDto(urlEntity);
         }
 
         public List<UrlStatsResponseDto> getUserUrls(Long userId) {
             if (!userRepository.existsById(userId)) {
-                throw new UserNotFoundException("User with ID " + userId + " doesn't exist");
+                throw new UserNotFoundException(USER_PREFIX_ERROR + userId + NOT_EXIST_SUFFIX);
             }
 
             return urlMapper.toStatsDtoList(urlRepository.findByUserId(userId));
+        }
+
+        public void deleteUrl(String code) {
+        UrlEntity urlEntity = urlRepository.findByCode(code).
+                orElseThrow(()-> new UrlNotFoundException(URL_PREFIX_ERROR + code + NOT_FOUND_SUFFIX));
+        urlRepository.delete(urlEntity);
         }
     }

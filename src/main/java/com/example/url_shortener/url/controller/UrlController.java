@@ -36,4 +36,10 @@ public class UrlController {
     public UrlStatsResponseDto getUrlStats(@PathVariable String code) {
         return urlService.getUrlStats(code);
     }
+
+    @DeleteMapping("/{code}")
+    public void deleteUrl(@PathVariable String code) {
+        urlService.deleteUrl(code);
+    }
+
 }
