@@ -24,7 +24,7 @@ public class UrlController {
     }
 
     @GetMapping("/{code}")
-    public ResponseEntity<?> getOriginalUrl(@PathVariable String code) {
+    public ResponseEntity<String> getOriginalUrl(@PathVariable String code) {
         String originalUrl = urlService.getOriginalUrl(code);
         java.net.URI redirectUri = java.net.URI.create(originalUrl);
         return ResponseEntity.status(HttpStatus.FOUND)
@@ -34,7 +34,6 @@ public class UrlController {
 
     @GetMapping("/{code}/stats")
     public UrlStatsResponseDto getUrlStats(@PathVariable String code) {
-        UrlStatsResponseDto urlStats = urlService.getUrlStats(code);
-        return urlStats;
+        return urlService.getUrlStats(code);
     }
 }
