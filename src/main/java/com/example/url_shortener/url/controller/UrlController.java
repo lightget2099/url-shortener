@@ -4,10 +4,15 @@ import com.example.url_shortener.url.dto.UrlRequestDto;
 import com.example.url_shortener.url.dto.UrlResponseDto;
 import com.example.url_shortener.url.dto.UrlStatsResponseDto;
 import com.example.url_shortener.url.service.UrlService;
+import com.example.url_shortener.user.repository.UserRepository;
+import com.example.url_shortener.user.service.CustomUserDetailsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,9 +23,10 @@ public class UrlController {
 
     @PostMapping
     public ResponseEntity<UrlResponseDto> createShortenUrl(@Valid @RequestBody UrlRequestDto dto,
-                                                           @RequestParam Long userId) {
-        UrlResponseDto test = new UrlResponseDto(urlService.shortenUrl(dto.getUrl(), userId));
-        return ResponseEntity.ok(test);
+                                                           @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        UrlResponseDto response = new UrlResponseDto(urlService.shortenUrl(dto.getUrl(), username));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{code}")

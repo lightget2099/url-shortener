@@ -11,6 +11,8 @@ import com.example.url_shortener.user.entity.UserEntity;
 import com.example.url_shortener.user.mapper.UserMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,9 +31,10 @@ public class UserController {
        return userMapper.toResponse(registeredUser);
     }
 
-    @GetMapping("/{userId}/urls")
-    public List<UrlStatsResponseDto> getUserUrls(@PathVariable Long userId){
-        return urlService.getUserUrls(userId);
+    @GetMapping("/all/urls")
+    public List<UrlStatsResponseDto> getUserUrls(@AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        return urlService.getUserUrls(username);
     }
 
     @PostMapping("/login")
