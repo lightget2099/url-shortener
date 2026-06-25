@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -12,10 +13,11 @@ import java.nio.charset.StandardCharsets;
 @Component
 @RequiredArgsConstructor
 public class JwtUtils {
-    private static final String SECRET_KEY = "my_personal_secret_key_here_is_32_chars_and_all_is_good";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     private javax.crypto.SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(String username) {
