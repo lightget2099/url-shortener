@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface UrlRepository extends JpaRepository<UrlEntity, Long> {
     Optional<UrlEntity> findByCode(String code);
     List<UrlEntity> findByUserId(Long userId);
+    Optional<UrlEntity> findByUserIdAndUrl(Long userId, String url);
 
     @Modifying
     @Transactional

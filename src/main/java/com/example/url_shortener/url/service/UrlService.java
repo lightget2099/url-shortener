@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,12 @@ public class UrlService {
     }
 
     public String shortenUrl(String url, Long userId) {
+        Optional<UrlEntity> existingUrl = urlRepository.findByUserIdAndUrl(userId, url);
+
+        if (existingUrl.isPresent()) {
+            return existingUrl.get().getCode();
+        }
+        
         UrlEntity urlEntity = new UrlEntity();
         urlEntity.setUrl(url);
         urlEntity.setCreatedAt(LocalDateTime.now());
