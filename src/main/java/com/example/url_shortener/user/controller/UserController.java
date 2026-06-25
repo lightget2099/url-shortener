@@ -32,7 +32,7 @@ public class UserController {
     @PostMapping("/register")
     @Operation(summary = "Реєстрація",
             description = "Процесс реєстрації користувача")
-    public UserRegistrationResponseDto register(@RequestBody UserRegistrationRequestDto dto){
+    public UserRegistrationResponseDto register(@RequestBody @Valid UserRegistrationRequestDto dto){
        UserEntity registeredUser = userService.registerUser(dto.getUsername(), dto.getPassword());
        return userMapper.toResponse(registeredUser);
     }
