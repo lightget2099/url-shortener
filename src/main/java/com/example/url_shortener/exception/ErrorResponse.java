@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
 @Value
+@SuppressWarnings("ClassCanBeRecord")
 public class ErrorResponse {
     @Schema(description = "Повідомлення про помилку",
     example = "For shorten url: 'exampleURL' original URL was not found")

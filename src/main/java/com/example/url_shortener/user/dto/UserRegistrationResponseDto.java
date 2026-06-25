@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Value;
 
 @Value
+@SuppressWarnings("ClassCanBeRecord")
 public class UserRegistrationResponseDto {
     @Schema(description = "ID користувача",
     example = "5")

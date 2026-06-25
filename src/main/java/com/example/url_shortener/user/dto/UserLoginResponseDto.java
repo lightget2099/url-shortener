@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Value;
 
 @Value
+@SuppressWarnings("ClassCanBeRecord")
 public class UserLoginResponseDto {
     @Schema(description = "JWT токен",
     example = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0ZXN0VXNlciIsImlhdCI6MTc4MjQyNjc1NiwiZXhwIjoxNzgyNTEzMTU2fQ." +

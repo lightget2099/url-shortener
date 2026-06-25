@@ -6,6 +6,7 @@ import lombok.Value;
 import java.time.LocalDateTime;
 
 @Value
+@SuppressWarnings("ClassCanBeRecord")
 public class UrlStatsResponseDto {
     @Schema(description = "Довгий URL",
             example = "https://github.com")

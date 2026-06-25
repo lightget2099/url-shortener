@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Value;
 
 @Value
+@SuppressWarnings("ClassCanBeRecord")
 public class UserLoginRequestDto {
     @NotBlank
             @Schema(description = "Ім`я користувача",
