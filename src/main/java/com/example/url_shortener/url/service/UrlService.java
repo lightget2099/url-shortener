@@ -10,6 +10,7 @@ import com.example.url_shortener.url.repository.UrlRepository;
 import com.example.url_shortener.user.entity.UserEntity;
 import com.example.url_shortener.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -103,9 +104,14 @@ public class UrlService {
             return urlMapper.toStatsDtoList(urlRepository.findByUserId(user.getId()));
         }
 
-        public void deleteUrl(String code) {
+        public void deleteUrl(String code, String username) {
         UrlEntity urlEntity = urlRepository.findByCode(code).
                 orElseThrow(()-> new UrlNotFoundException(URL_PREFIX_ERROR + code + NOT_FOUND_SUFFIX));
+
+        if (!urlEntity.getUser().getUsername().equals(username)) {
+            throw new AccessDeniedException("Ви не маєте права на видалення цього посилання");
+        }
+
         urlRepository.delete(urlEntity);
         }
     }

@@ -44,8 +44,9 @@ public class UrlController {
     }
 
     @DeleteMapping("/{code}")
-    public void deleteUrl(@PathVariable String code) {
-        urlService.deleteUrl(code);
+    public void deleteUrl(@PathVariable String code, @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        urlService.deleteUrl(code, username);
     }
 
 }
