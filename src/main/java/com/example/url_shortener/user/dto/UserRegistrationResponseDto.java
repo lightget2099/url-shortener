@@ -3,7 +3,7 @@ package com.example.url_shortener.user.dto;
 import lombok.Value;
 
 @Value
-public class UserRegistrationDto {
+public class UserRegistrationResponseDto {
+    Long id;
     String username;
-    String password;
 }
