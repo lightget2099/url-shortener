@@ -31,7 +31,11 @@ public class UrlController {
     public ResponseEntity<UrlResponseDto> createShortenUrl(@Valid @RequestBody UrlRequestDto dto,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
-        UrlResponseDto response = new UrlResponseDto(urlService.shortenUrl(dto.getUrl(), username));
+
+        String code = urlService.shortenUrl(dto.getUrl(), username);
+        String fullShortUrl = "http://localhost:8080/r/" + code;
+        UrlResponseDto response = new UrlResponseDto(code, fullShortUrl);
+
         return ResponseEntity.ok(response);
     }
 
