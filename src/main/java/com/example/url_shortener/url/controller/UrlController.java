@@ -39,17 +39,6 @@ public class UrlController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/r/{code}")
-    @Operation(summary = "Повернення довгого URL",
-            description = "Повертає оригінальний URL за вказанним коротким кодом")
-    public ResponseEntity<String> getOriginalUrl(@PathVariable String code) {
-        String originalUrl = urlService.getOriginalUrl(code);
-        java.net.URI redirectUri = java.net.URI.create(originalUrl);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(redirectUri)
-                .build();
-    }
-
     @GetMapping("/{code}/stats")
     @Operation(summary = "Інформація про певний URL",
     description = "Отримання всієї інформації про конктрений URL")
