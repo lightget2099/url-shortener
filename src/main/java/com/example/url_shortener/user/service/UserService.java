@@ -1,6 +1,8 @@
 package com.example.url_shortener.user.service;
 
 import com.example.url_shortener.config.JwtUtils;
+import com.example.url_shortener.exception.InvalidCredentialsException;
+import com.example.url_shortener.exception.UserAlreadyExistsException;
 import com.example.url_shortener.user.dto.UserLoginRequestDto;
 import com.example.url_shortener.user.dto.UserLoginResponseDto;
 import com.example.url_shortener.user.repository.UserRepository;
@@ -18,7 +20,7 @@ public class UserService {
 
     public UserEntity registerUser(String username, String password) {
         if(userRepository.existsByUsername(username)){
-            throw new IllegalArgumentException("Username already exists");
+            throw new UserAlreadyExistsException("Username already exists");
         }
 
         UserEntity user = new UserEntity();
@@ -30,10 +32,10 @@ public class UserService {
 
     public UserLoginResponseDto login(UserLoginRequestDto dto) {
         UserEntity userEntity = userRepository.findByUsername(dto.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
 
         if (!passwordEncoder.matches(dto.getPassword(), userEntity.getPassword())) {
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new InvalidCredentialsException("Invalid username or password");
         }
 
         String token = jwtUtils.generateToken(userEntity.getUsername());
