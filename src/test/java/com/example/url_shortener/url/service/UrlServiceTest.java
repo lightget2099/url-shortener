@@ -3,6 +3,7 @@ package com.example.url_shortener.url.service;
 import com.example.url_shortener.exception.UrlExpiredException;
 import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.exception.UserNotFoundException;
+import com.example.url_shortener.url.dto.UrlRequestDto;
 import com.example.url_shortener.url.dto.UrlStatsResponseDto;
 import com.example.url_shortener.url.entity.UrlEntity;
 import com.example.url_shortener.url.repository.UrlRepository;
@@ -59,9 +60,9 @@ class UrlServiceTest {
         String result = urlService.getOriginalUrl(code);
 
         Assertions.assertEquals(originalUrl, result);
-        Assertions.assertEquals(1, fakeUrl.getClickCount());
 
-        Mockito.verify(urlRepository, Mockito.times(1)).save(fakeUrl);
+        Mockito.verify(urlRepository, Mockito.times(1)).incrementClickCount(code);
+        Mockito.verify(urlRepository, Mockito.never()).save(Mockito.any(UrlEntity.class));
     }
 
     @Test
@@ -112,11 +113,13 @@ class UrlServiceTest {
         String username = "non_existent_user";
         String url = "https://google.com";
 
+        UrlRequestDto requestDto = new UrlRequestDto(url, null);
+
         Mockito.when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         UserNotFoundException exception = Assertions.assertThrows(
                 UserNotFoundException.class,
-                () -> urlService.shortenUrl(url, username)
+                () -> urlService.shortenUrl(requestDto, username)
         );
 
         String expectedMessage = USER_PREFIX_ERROR + username + NOT_EXIST_SUFFIX;
@@ -130,6 +133,8 @@ class UrlServiceTest {
         String username = "existing_user";
         String originalUrl = "https://google.com";
 
+        UrlRequestDto requestDto = new UrlRequestDto(originalUrl, null);
+
         UserEntity fakeUser = new UserEntity();
         fakeUser.setUsername(username);
         fakeUser.setId(1L);
@@ -141,7 +146,7 @@ class UrlServiceTest {
         Mockito.when(userRepository.findByUsername(username)).thenReturn(Optional.of(fakeUser));
         Mockito.when(urlRepository.findByUserIdAndUrl(fakeUser.getId(), originalUrl)).thenReturn(Optional.of(fakeUrl));
 
-        String result = urlService.shortenUrl(originalUrl, username);
+        String result = urlService.shortenUrl(requestDto, username);
 
         Assertions.assertEquals(fakeUrl.getCode(), result);
 
@@ -154,6 +159,8 @@ class UrlServiceTest {
     void shortenUrl_ShouldCreateAndReturnNewCode_WhenUrlIsNew() {
         String originalUrl = "https://google.com";
         String username = "existing_user";
+
+        UrlRequestDto requestDto = new UrlRequestDto(originalUrl, null);
 
         UserEntity fakeUser = new UserEntity();
         fakeUser.setUsername(username);
@@ -169,14 +176,14 @@ class UrlServiceTest {
         Mockito.when(urlRepository.findByUserIdAndUrl(fakeUser.getId(), originalUrl)).thenReturn(Optional.empty());
         Mockito.when(urlRepository.save(Mockito.any(UrlEntity.class))).thenReturn(urlWithId);
 
-        String result = urlService.shortenUrl(originalUrl, username);
+        String result = urlService.shortenUrl(requestDto, username);
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(6, result.length());
+        Assertions.assertTrue(result.length() >= 6 && result.length() <= 8);
 
         Mockito.verify(userRepository, Mockito.times(1)).findByUsername(username);
         Mockito.verify(urlRepository, Mockito.times(1)).findByUserIdAndUrl(fakeUser.getId(), originalUrl);
-        Mockito.verify(urlRepository, Mockito.times(2)).save(Mockito.any(UrlEntity.class));
+        Mockito.verify(urlRepository, Mockito.times(1)).save(Mockito.any(UrlEntity.class));
     }
 
     @Test
@@ -293,6 +300,67 @@ class UrlServiceTest {
         Mockito.verify(userRepository, Mockito.times(1)).findByUsername(username);
         Mockito.verify(urlRepository, Mockito.times(1)).findByUserId(fakeUser.getId());
         Mockito.verify(urlMapper, Mockito.times(1)).toStatsDtoList(fakeUrls);
+    }
+
+    @Test
+    void getActiveUserUrls_ShouldReturnActiveUrlsList_WhenUserExists() {
+        String username = "bogdan_test";
+
+        UserEntity fakeUser = new UserEntity();
+        fakeUser.setUsername(username);
+        fakeUser.setId(1L);
+
+        UrlEntity fakeUrl = new UrlEntity();
+        fakeUrl.setUser(fakeUser);
+        List<UrlEntity> fakeActiveUrls = List.of(fakeUrl);
+
+        UrlStatsResponseDto fakeDto = new UrlStatsResponseDto("https://google.com", "abcdef", 0, null, null);
+        List<UrlStatsResponseDto> fakeDtoList = List.of(fakeDto);
+
+        Mockito.when(userRepository.findByUsername(username)).thenReturn(Optional.of(fakeUser));
+        Mockito.when(urlRepository.findActiveByUserId(Mockito.eq(fakeUser.getId()), Mockito.any(LocalDateTime.class)))
+                .thenReturn(fakeActiveUrls);
+        Mockito.when(urlMapper.toStatsDtoList(fakeActiveUrls)).thenReturn(fakeDtoList);
+
+        List<UrlStatsResponseDto> result = urlService.getActiveUserUrls(username);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(fakeDtoList, result);
+
+        Mockito.verify(userRepository, Mockito.times(1)).findByUsername(username);
+        Mockito.verify(urlRepository, Mockito.times(1)).findActiveByUserId(Mockito.eq(fakeUser.getId()), Mockito.any(LocalDateTime.class));
+        Mockito.verify(urlMapper, Mockito.times(1)).toStatsDtoList(fakeActiveUrls);
+    }
+
+    @Test
+    void updateOriginalUrl_ShouldUpdateUrlAndReturnDto_WhenUserIsOwner() {
+        String code = "abcdef";
+        String newUrl = "https://new-url.com";
+        String username = "owner_user";
+
+        UserEntity owner = new UserEntity();
+        owner.setUsername(username);
+
+        UrlEntity fakeUrl = new UrlEntity();
+        fakeUrl.setCode(code);
+        fakeUrl.setUser(owner);
+        fakeUrl.setUrl("https://old-url.com");
+
+        UrlStatsResponseDto fakeDto = new UrlStatsResponseDto(newUrl, code, 0, null, null);
+
+        Mockito.when(urlRepository.findByCode(code)).thenReturn(Optional.of(fakeUrl));
+        Mockito.when(urlRepository.save(fakeUrl)).thenReturn(fakeUrl);
+        Mockito.when(urlMapper.toStatsDto(fakeUrl)).thenReturn(fakeDto);
+
+        UrlStatsResponseDto result = urlService.updateOriginalUrl(code, newUrl, username);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(newUrl, fakeUrl.getUrl());
+        Assertions.assertEquals(fakeDto, result);
+
+        Mockito.verify(urlRepository, Mockito.times(1)).findByCode(code);
+        Mockito.verify(urlRepository, Mockito.times(1)).save(fakeUrl);
+        Mockito.verify(urlMapper, Mockito.times(1)).toStatsDto(fakeUrl);
     }
 
 }

@@ -2,7 +2,6 @@ package com.example.url_shortener.user.controller;
 
 import com.example.url_shortener.config.JwtUtils;
 import com.example.url_shortener.config.SecurityConfig;
-import com.example.url_shortener.url.dto.UrlStatsResponseDto;
 import com.example.url_shortener.url.service.UrlService;
 import com.example.url_shortener.user.dto.UserLoginRequestDto;
 import com.example.url_shortener.user.dto.UserLoginResponseDto;
@@ -22,10 +21,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -104,24 +99,5 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(fakeRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value(token));
-    }
-
-    @Test
-    void getUserUrls_ShouldReturnUrlStatsList_WhenUserIsAuthenticated() throws Exception {
-        String username = "bogdan_test";
-
-        UrlStatsResponseDto fakeUrlStats = new UrlStatsResponseDto("https://github.com", "abcdef", 5, null, null);
-        List<UrlStatsResponseDto> fakeList = List.of(fakeUrlStats);
-
-        Mockito.when(urlService.getUserUrls(username)).thenReturn(fakeList);
-
-        mockMvc.perform(get("/api/v1/users/all/urls")
-                        .with(user(username))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].url").value("https://github.com"))
-                .andExpect(jsonPath("$[0].code").value("abcdef"))
-                .andExpect(jsonPath("$[0].clicks").value(5));
     }
 }

@@ -1,6 +1,8 @@
 package com.example.url_shortener.user.service;
 
 import com.example.url_shortener.config.JwtUtils;
+import com.example.url_shortener.exception.InvalidCredentialsException;
+import com.example.url_shortener.exception.UserAlreadyExistsException;
 import com.example.url_shortener.user.dto.UserLoginRequestDto;
 import com.example.url_shortener.user.dto.UserLoginResponseDto;
 import com.example.url_shortener.user.entity.UserEntity;
@@ -68,8 +70,8 @@ class UserServiceTest {
 
         Mockito.when(userRepository.existsByUsername(username)).thenReturn(true);
 
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        UserAlreadyExistsException exception = Assertions.assertThrows(
+                UserAlreadyExistsException.class,
                 () -> userService.registerUser(username, password)
         );
 
@@ -113,8 +115,8 @@ class UserServiceTest {
 
         Mockito.when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        InvalidCredentialsException exception = Assertions.assertThrows(
+                InvalidCredentialsException.class,
                 () -> userService.login(loginDto)
         );
 
@@ -140,8 +142,8 @@ class UserServiceTest {
         Mockito.when(userRepository.findByUsername(username)).thenReturn(Optional.of(fakeUser));
         Mockito.when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(false);
 
-        IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        InvalidCredentialsException exception = Assertions.assertThrows(
+                InvalidCredentialsException.class,
                 () -> userService.login(loginDto)
         );
 
