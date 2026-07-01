@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,14 +16,17 @@ public interface UrlRepository extends JpaRepository<UrlEntity, Long> {
     Optional<UrlEntity> findByUserIdAndUrl(Long userId, String url);
 
     @Modifying
-    @Transactional
-    void deleteByExpiresAtBefore(LocalDateTime now);
-
-    @Modifying
     @Query("""
     update UrlEntity u
     set u.clickCount = u.clickCount + 1
     where u.code = :code
     """)
     int incrementClickCount(@Param("code") String code);
+
+    @Query("""
+    select u from UrlEntity u 
+    where u.user.id = :userId 
+    and u.expiresAt > :now
+    """)
+    List<UrlEntity> findActiveByUserId(@Param("userId") Long userId, @Param("now") LocalDateTime now);
 }

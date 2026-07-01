@@ -115,4 +115,29 @@ public class UrlService {
 
         urlRepository.delete(urlEntity);
         }
+
+
+    public List<UrlStatsResponseDto> getActiveUserUrls(String username) {
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(USER_PREFIX_ERROR + username + NOT_EXIST_SUFFIX));
+
+        List<UrlEntity> activeUrls = urlRepository.findActiveByUserId(user.getId(), LocalDateTime.now());
+
+        return urlMapper.toStatsDtoList(activeUrls);
+    }
+
+    @Transactional
+    public UrlStatsResponseDto updateOriginalUrl(String code, String newUrl, String username) {
+        UrlEntity urlEntity = urlRepository.findByCode(code)
+                .orElseThrow(() -> new UrlNotFoundException(URL_PREFIX_ERROR + code + NOT_FOUND_SUFFIX));
+
+        if (!urlEntity.getUser().getUsername().equals(username)) {
+            throw new AccessDeniedException("Ви не маєте права на редагування цього посилання");
+        }
+
+        urlEntity.setUrl(newUrl);
+        UrlEntity updated = urlRepository.save(urlEntity);
+
+        return urlMapper.toStatsDto(updated);
+    }
     }
