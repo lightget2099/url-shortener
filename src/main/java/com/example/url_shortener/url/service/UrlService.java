@@ -12,6 +12,7 @@ import com.example.url_shortener.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,6 +78,7 @@ public class UrlService {
         return code;
     }
 
+    @Transactional
     public String getOriginalUrl(String code) {
         UrlEntity urlEntity = urlRepository.findByCode(code)
                         .orElseThrow(() -> new UrlNotFoundException(URL_PREFIX_ERROR + code + NOT_FOUND_SUFFIX));
@@ -85,8 +87,7 @@ public class UrlService {
             throw new UrlExpiredException(URL_PREFIX_ERROR + code + " has expired");
         }
 
-        urlEntity.setClickCount(urlEntity.getClickCount() + 1);
-        urlRepository.save(urlEntity);
+        urlRepository.incrementClickCount(code);
         return urlEntity.getUrl();
         }
 
