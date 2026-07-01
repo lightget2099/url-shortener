@@ -118,7 +118,6 @@ public class UrlService {
         urlRepository.delete(urlEntity);
         }
 
-
     public List<UrlStatsResponseDto> getActiveUserUrls(String username) {
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(USER_PREFIX_ERROR + username + NOT_EXIST_SUFFIX));
@@ -142,4 +141,4 @@ public class UrlService {
 
         return urlMapper.toStatsDto(updated);
     }
-    }
+}
