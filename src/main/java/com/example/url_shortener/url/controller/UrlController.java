@@ -32,7 +32,7 @@ public class UrlController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{code}")
+    @GetMapping("/r/{code}")
     @Operation(summary = "Повернення довгого URL",
             description = "Повертає оригінальний URL за вказанним коротким кодом")
     public ResponseEntity<String> getOriginalUrl(@PathVariable String code) {
