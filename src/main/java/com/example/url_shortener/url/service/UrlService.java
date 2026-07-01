@@ -35,23 +35,17 @@ public class UrlService {
     private static final String USER_PREFIX_ERROR = "User with username '";
     private static final String NOT_EXIST_SUFFIX = "' doesn't exist";
 
-    private String encodeToBase62(long id) {
-        StringBuilder sb = new StringBuilder();
-        while (id > 0) {
-            int remainder = (int) (id % 62);
-            sb.append(ALPHABET.charAt(remainder));
-            id = id / 62;
-        }
-
+    private String generateRandomCode() {
         ThreadLocalRandom rand = ThreadLocalRandom.current();
-        while (sb.length() < 6) {
-            char randomChar = ALPHABET.charAt(rand.nextInt(ALPHABET.length()));
-            sb.append(randomChar);
+        int length = rand.nextInt(6, 9);
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(ALPHABET.charAt(rand.nextInt(ALPHABET.length())));
         }
-
         return sb.toString();
     }
 
+    @Transactional
     public String shortenUrl(UrlRequestDto dto, String username) {
         UserEntity user = userRepository.findByUsername(username).
                 orElseThrow(() -> new UserNotFoundException(USER_PREFIX_ERROR + username + NOT_EXIST_SUFFIX));
@@ -63,10 +57,15 @@ public class UrlService {
             return existingUrl.get().getCode();
         }
 
+        String code = generateRandomCode();
+        while (urlRepository.findByCode(code).isPresent()) {
+            code = generateRandomCode();
+        }
+
         UrlEntity urlEntity = new UrlEntity();
         urlEntity.setUrl(dto.getUrl());
+        urlEntity.setCode(code);
         urlEntity.setCreatedAt(LocalDateTime.now());
-        urlEntity.setExpiresAt(LocalDateTime.now().plusDays(30));
 
         if (dto.getExpirationDays() != null) {
             urlEntity.setExpiresAt(LocalDateTime.now().plusDays(dto.getExpirationDays()));
@@ -75,12 +74,8 @@ public class UrlService {
         }
 
         urlEntity.setUser(user);
-        urlEntity.setCode("");
-        UrlEntity savedUrl = urlRepository.save(urlEntity);
 
-        String code = encodeToBase62(savedUrl.getId());
-        savedUrl.setCode(code);
-        urlRepository.save(savedUrl);
+        urlRepository.save(urlEntity);
 
         return code;
     }
