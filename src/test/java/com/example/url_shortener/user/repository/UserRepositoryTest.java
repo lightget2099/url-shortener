@@ -15,7 +15,7 @@ class UserRepositoryTest extends BaseIntegrationTest {
     private UserRepository userRepository;
 
     @Test
-    void saveUser_ShouldPersistInPostgreSQLContainer() {
+    void saveUser_ShouldPersistInPostgresSQLContainer() {
         UserEntity user = new UserEntity();
         user.setUsername("docker_bogdan");
         user.setPassword("EncryptedPassword123");

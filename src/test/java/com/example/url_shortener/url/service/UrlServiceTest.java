@@ -151,7 +151,7 @@ class UrlServiceTest {
     }
 
     @Test
-    void shortenUrl_ShouldCreateandReturnNewCode_WhenUrlIsNew() {
+    void shortenUrl_ShouldCreateAndReturnNewCode_WhenUrlIsNew() {
         String originalUrl = "https://google.com";
         String username = "existing_user";
 
