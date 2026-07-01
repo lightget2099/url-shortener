@@ -3,6 +3,7 @@ package com.example.url_shortener.url.service;
 import com.example.url_shortener.exception.UrlExpiredException;
 import com.example.url_shortener.exception.UrlNotFoundException;
 import com.example.url_shortener.exception.UserNotFoundException;
+import com.example.url_shortener.url.dto.UrlRequestDto;
 import com.example.url_shortener.url.dto.UrlStatsResponseDto;
 import com.example.url_shortener.url.entity.UrlEntity;
 import com.example.url_shortener.url.mapper.UrlMapper;
@@ -51,21 +52,27 @@ public class UrlService {
         return sb.toString();
     }
 
-    public String shortenUrl(String url, String username) {
+    public String shortenUrl(UrlRequestDto dto, String username) {
         UserEntity user = userRepository.findByUsername(username).
                 orElseThrow(() -> new UserNotFoundException(USER_PREFIX_ERROR + username + NOT_EXIST_SUFFIX));
 
         Long userId = user.getId();
-        Optional<UrlEntity> existingUrl = urlRepository.findByUserIdAndUrl(userId, url);
+        Optional<UrlEntity> existingUrl = urlRepository.findByUserIdAndUrl(userId, dto.getUrl());
 
         if (existingUrl.isPresent()) {
             return existingUrl.get().getCode();
         }
 
         UrlEntity urlEntity = new UrlEntity();
-        urlEntity.setUrl(url);
+        urlEntity.setUrl(dto.getUrl());
         urlEntity.setCreatedAt(LocalDateTime.now());
         urlEntity.setExpiresAt(LocalDateTime.now().plusDays(30));
+
+        if (dto.getExpirationDays() != null) {
+            urlEntity.setExpiresAt(LocalDateTime.now().plusDays(dto.getExpirationDays()));
+        } else {
+            urlEntity.setExpiresAt(LocalDateTime.now().plusDays(30));
+        }
 
         urlEntity.setUser(user);
         urlEntity.setCode("");

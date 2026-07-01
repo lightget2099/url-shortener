@@ -32,7 +32,7 @@ public class UrlController {
                                                            @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
 
-        String code = urlService.shortenUrl(dto.getUrl(), username);
+        String code = urlService.shortenUrl(dto, username);
         String fullShortUrl = "http://localhost:8080/r/" + code;
         UrlResponseDto response = new UrlResponseDto(code, fullShortUrl);
 
