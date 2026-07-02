@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -26,6 +27,7 @@ public class UserController {
     @PostMapping("/register")
     @Operation(summary = "Реєстрація",
             description = "Процесс реєстрації користувача")
+    @ResponseStatus(HttpStatus.CREATED)
     public UserRegistrationResponseDto register(@RequestBody @Valid UserRegistrationRequestDto dto){
        UserEntity registeredUser = userService.registerUser(dto.getUsername(), dto.getPassword());
        return userMapper.toResponse(registeredUser);
