@@ -104,3 +104,11 @@ jacocoTestCoverageVerification {
 }
 
 check.dependsOn jacocoTestCoverageVerification
+
+jar {
+	enabled = false
+}
+
+bootJar {
+	archiveFileName = 'app.jar'
+}
