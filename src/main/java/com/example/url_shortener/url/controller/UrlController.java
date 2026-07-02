@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,9 @@ description = "Управління короткими лінками, реди�
 public class UrlController {
     private final UrlService urlService;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     @PostMapping
     @Operation(summary = "Створення короткого посилання",
     description = "Генеруж випадковий код 6-8 символів для довгої URL адресси")
@@ -32,7 +36,7 @@ public class UrlController {
         String username = userDetails.getUsername();
 
         String code = urlService.shortenUrl(dto, username);
-        String fullShortUrl = "http://localhost:8080/r/" + code;
+        String fullShortUrl = baseUrl + "/r/" + code;
         UrlResponseDto response = new UrlResponseDto(code, fullShortUrl);
 
         return ResponseEntity.ok(response);
