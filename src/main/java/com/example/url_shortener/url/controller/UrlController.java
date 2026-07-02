@@ -45,8 +45,10 @@ public class UrlController {
     @GetMapping("/{code}/stats")
     @Operation(summary = "Інформація про певний URL",
     description = "Отримання всієї інформації про конктрений URL")
-    public UrlStatsResponseDto getUrlStats(@PathVariable String code) {
-        return urlService.getUrlStats(code);
+    public UrlStatsResponseDto getUrlStats(@PathVariable String code,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        return urlService.getUrlStats(code, username);
     }
 
     @DeleteMapping("/{code}")

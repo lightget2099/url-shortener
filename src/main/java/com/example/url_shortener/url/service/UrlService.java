@@ -93,9 +93,13 @@ public class UrlService {
         return urlEntity.getUrl();
         }
 
-        public UrlStatsResponseDto getUrlStats(String code) {
+        public UrlStatsResponseDto getUrlStats(String code, String username) {
         UrlEntity urlEntity = urlRepository.findByCode(code).
                 orElseThrow(() -> new UrlNotFoundException(URL_PREFIX_ERROR + code + NOT_FOUND_SUFFIX));
+
+        if(!urlEntity.getUser().getUsername().equals(username)) {
+            throw new AccessDeniedException("Ви не маєте права на перегляд статистики цього посилання");
+        }
 
         return urlMapper.toStatsDto(urlEntity);
         }
