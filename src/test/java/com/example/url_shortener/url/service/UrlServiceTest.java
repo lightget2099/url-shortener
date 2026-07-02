@@ -255,15 +255,21 @@ class UrlServiceTest {
     @Test
     void getUrlStats_ShouldReturnStatsDto_WhenUrlExists() {
         String code = "abcdef";
+        String username = "true_owner";
+
+        UserEntity owner = new UserEntity();
+        owner.setUsername(username);
+
         UrlEntity fakeUrl = new UrlEntity();
         fakeUrl.setCode(code);
+        fakeUrl.setUser(owner);
 
         UrlStatsResponseDto fakeDto = new UrlStatsResponseDto("https://google.com", code, 0, null, null);
 
         Mockito.when(urlRepository.findByCode(code)).thenReturn(Optional.of(fakeUrl));
         Mockito.when(urlMapper.toStatsDto(fakeUrl)).thenReturn(fakeDto);
 
-        UrlStatsResponseDto result = urlService.getUrlStats(code);
+        UrlStatsResponseDto result = urlService.getUrlStats(code, username);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(fakeDto, result);

@@ -139,7 +139,7 @@ class UrlControllerTest {
         LocalDateTime now = LocalDateTime.now();
 
         UrlStatsResponseDto urlStatsResponseDto = new UrlStatsResponseDto(originalUrl, code, clicks, now, now.plusMonths(1));
-        Mockito.when(urlService.getUrlStats(code)).thenReturn(urlStatsResponseDto);
+        Mockito.when(urlService.getUrlStats(code, "bogdan_test")).thenReturn(urlStatsResponseDto);
 
         mockMvc.perform(get("/api/v1/urls/" + code + "/stats")
                         .with(user("bogdan_test"))
